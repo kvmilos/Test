@@ -1,5 +1,6 @@
 from homework import take_from_list, calculate
 import pytest
+from filecmp import cmp
 
 @pytest.mark.parametrize("i", ['a',"abc",[[1],[2]],1.0])
 def test_take_from_list_type(i):
@@ -12,6 +13,11 @@ def test_take_from_list_int():
 def test_take_from_list_list():
     assert take_from_list([1,2,3],[0,2]) == [1,3]
 
+def test_take_from_list_indexout():
+    index = [3]
+    li = [1,2,3]
+    with pytest.raises(IndexError, match=f"Index {index} is too big for list of length {len(li)}"):
+        take_from_list(li, index)
 def test_calculateab(tmp_path):
     f = tmp_path / "testing-homework/output.json"
     f.parent.mkdir()
@@ -25,3 +31,4 @@ def test_calculateio(tmp_path):
     fo.parent.mkdir()
     fo.touch()
     calculate("input.json", fo)
+    assert cmp(fo, "output.json")
